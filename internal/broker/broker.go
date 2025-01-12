@@ -43,7 +43,7 @@ func (b *Broker) SendMessage(queueName string, message *Message) error {
 	return queue.Push(message)
 }
 
-func (b *Broker) AddSubscriber(queueName string, subscriber chan *Message) error {
+func (b *Broker) AddSubscriber(queueName string) error {
 	b.mu.RLock()
 	queue, exists := b.queues[queueName]
 	b.mu.RUnlock()
@@ -52,5 +52,6 @@ func (b *Broker) AddSubscriber(queueName string, subscriber chan *Message) error
 		return errors.New("queue not found")
 	}
 
+	subscriber := make(chan *Message, 1)
 	return queue.AddSubscriber(subscriber)
 }

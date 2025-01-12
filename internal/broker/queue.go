@@ -69,12 +69,8 @@ func (q *Queue) Push(val *Message) error {
 		for _, sub := range q.subscribers {
 			fmt.Println("subscribe")
 			sub <- val
-			fmt.Println("Sended to sub:,", sub, "Now len is:", len(q.arr))
-		}
-		if q.h == q.size {
-			q.h = 0
-		} else {
-			q.h++
+			fmt.Println("Sended to sub:", sub, "Now len is:", len(q.arr), "Message: ", q.arr[q.t])
+			q.Pop()
 		}
 		fmt.Println("Send to all subs:", len(q.subscribers), "Now len is:", len(q.arr))
 	}
@@ -83,8 +79,6 @@ func (q *Queue) Push(val *Message) error {
 }
 
 func (q *Queue) Pop() (*Message, error) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
 	if q.isEmpty() {
 		return nil, fmt.Errorf("Queue is empty")
 	}
@@ -110,15 +104,28 @@ func (q *Queue) Top() (*Message, error) {
 }
 
 func (q *Queue) AddSubscriber(sub chan *Message) error {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-
 	if len(q.subscribers) >= q.maxSubs {
 		return fmt.Errorf("maximum number of subscribers reached")
 	}
 
+	fmt.Println("messages in queue:", len(q.arr))
 	q.subscribers = append(q.subscribers, sub)
 	fmt.Println("Subscriber has been added: sub: ", sub, "Now len is: ", len(q.arr))
+
+	if len(q.subscribers) > 0 {
+		fmt.Println("Subscribing:", q.subscribers)
+
+		for _, s := range q.subscribers {
+			message, err := q.Pop()
+			if err != nil {
+				return err
+			}
+			fmt.Println("subscribe")
+			s <- message
+			fmt.Println("Sended to sub:", s, "Now len is:", len(q.arr), "Message: ", message)
+		}
+		fmt.Println("Send to all subs:", len(q.subscribers), "Now len is:", len(q.arr))
+	}
 
 	q.h = q.t
 

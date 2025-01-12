@@ -57,9 +57,7 @@ func (h *Handler) sendMessage(c *gin.Context) {
 func (h *Handler) subscribe(c *gin.Context) {
 	queueName := c.Param("queue_name")
 
-	subscriber := make(chan *broker.Message, 1)
-
-	err := h.broker.AddSubscriber(queueName, subscriber)
+	err := h.broker.AddSubscriber(queueName)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
