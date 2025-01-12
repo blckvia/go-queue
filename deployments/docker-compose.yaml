@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  app:
+    image: go-queue:develop
+    volumes:
+      - ../configs:/application/configs
+      - ../.env:/application/.env
+    ports:
+      - "8080:8080"

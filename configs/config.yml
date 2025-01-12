@@ -1,0 +1,14 @@
+port: '8080'
+
+debug: true
+
+tracer:
+  url: 'http://localhost:14268/api/traces'
+
+queues:
+  - name: "queue1"
+    size: 1
+    max_subs: 1
+  - name: "queue2"
+    size: 3
+    max_subs: 2
