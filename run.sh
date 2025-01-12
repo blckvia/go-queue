@@ -37,6 +37,7 @@ using(){
   echo "  build_docker - собрать локальный docker образ"
   echo "  fmt - форматирование кода при помощи 'go fmt'"
   echo "  vet - проверка правильности форматирования кода"
+  echo "  run - запуск приложения локально через go run"
   echo "  pprof_cpu HOST [SECONDS] - сбор метрик нагрузки на cpu из pprof (НЕ НАСТРОЕНО)"
   echo "  pprof_heap HOST - запустить сбор метрик памяти из pprof (НЕ НАСТРОЕНО)"
 }
@@ -69,6 +70,10 @@ pprof_heap(){
   local HOST=$2
 
   go tool pprof -http :$PPROF_UI_PORT $HOST/debug/pprof/heap
+}
+
+run(){
+  go run ./cmd/app/main.go
 }
 
 ############### НЕ МЕНЯЙТЕ КОД НИЖЕ ЭТОЙ СТРОКИ #################
