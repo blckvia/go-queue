@@ -34,11 +34,7 @@ func NewQueue(name string, size, maxSubs int) *Queue {
 }
 
 func (q *Queue) isEmpty() bool {
-	if q.h == q.t {
-		return true
-	}
-
-	return false
+	return q.h == q.t
 }
 
 func (q *Queue) isFull() bool {
@@ -108,23 +104,27 @@ func (q *Queue) AddSubscriber(sub chan *Message) error {
 		return fmt.Errorf("maximum number of subscribers reached")
 	}
 
-	fmt.Println("messages in queue:", len(q.arr))
+	fmt.Println("messages in queue:", q.h+1)
 	q.subscribers = append(q.subscribers, sub)
-	fmt.Println("Subscriber has been added: sub: ", sub, "Now len is: ", len(q.arr))
+	fmt.Println("Subscriber has been added: sub: ", sub, "Now len is: ", len(q.subscribers))
 
 	if len(q.subscribers) > 0 {
 		fmt.Println("Subscribing:", q.subscribers)
 
-		for _, s := range q.subscribers {
+		for !q.isEmpty() {
 			message, err := q.Pop()
+			fmt.Println("Popped message:", message)
 			if err != nil {
-				return err
+				break
 			}
-			fmt.Println("subscribe")
-			s <- message
-			fmt.Println("Sended to sub:", s, "Now len is:", len(q.arr), "Message: ", message)
+			for _, s := range q.subscribers {
+				fmt.Println("subscribe")
+				s <- message
+				fmt.Println("Sended to sub:", s, "Now len is:", len(q.arr), "Message: ", message)
+			}
+			fmt.Println("Send to all subs:", len(q.subscribers), "Now len is:", len(q.arr))
 		}
-		fmt.Println("Send to all subs:", len(q.subscribers), "Now len is:", len(q.arr))
+
 	}
 
 	q.h = q.t

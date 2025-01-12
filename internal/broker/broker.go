@@ -52,6 +52,6 @@ func (b *Broker) AddSubscriber(queueName string) error {
 		return errors.New("queue not found")
 	}
 
-	subscriber := make(chan *Message, 1)
+	subscriber := make(chan *Message, 1000)
 	return queue.AddSubscriber(subscriber)
 }
